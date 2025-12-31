@@ -1,0 +1,16 @@
+{
+  "name": "kid-quiz",
+  "version": "1.0.0",
+  "description": "Trò chơi trắc nghiệm vui nhộn cho bé",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "python3 -m http.server 8000"
+  },
+  "keywords": [
+    "quiz",
+    "kids",
+    "education"
+  ],
+  "author": "",
+  "license": "ISC"
+}
