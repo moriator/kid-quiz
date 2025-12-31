@@ -18,6 +18,15 @@
     -webkit-tap-highlight-color: transparent;
 }
 
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow-x: hidden;
+    position: relative;
+}
+
 body {
     font-family: 'Quicksand', sans-serif;
     min-height: 100vh;
@@ -26,40 +35,31 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    overflow: hidden;
-    padding: 20px;
+    padding: 15px;
 }
 
-.app-container {
+.bg-decor {
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
-    max-width: 500px;
-    min-height: 600px;
-    background: var(--glass);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border: 1px solid var(--glass-border);
-    border-radius: 40px;
-    box-shadow: var(--shadow);
-    padding: 30px;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    z-index: 1;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+    pointer-events: none;
 }
 
-/* Background elements for depth */
 .bg-circle {
     position: absolute;
     border-radius: 50%;
-    filter: blur(40px);
-    z-index: 0;
+    filter: blur(60px);
 }
 
 .circle-1 {
     width: 300px;
     height: 300px;
     background: #FFD93D;
-    top: -50px;
+    top: -100px;
     left: -100px;
     opacity: 0.5;
 }
@@ -68,10 +68,39 @@ body {
     width: 250px;
     height: 250px;
     background: #6BCB77;
-    bottom: -50px;
+    bottom: -80px;
     right: -80px;
     opacity: 0.4;
 }
+
+.app-container {
+    width: 100%;
+    max-width: 500px;
+    min-height: 550px;
+    background: var(--glass);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border: 1px solid var(--glass-border);
+    border-radius: 35px;
+    box-shadow: var(--shadow);
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    z-index: 1;
+}
+
+@media (max-width: 400px) {
+    .app-container {
+        padding: 20px;
+        border-radius: 25px;
+    }
+
+    h1 {
+        font-size: 2rem;
+    }
+}
+
 
 /* Screens */
 .screen {
