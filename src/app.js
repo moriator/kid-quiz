@@ -107,7 +107,8 @@ class QuizGame {
         this.timer = null;
         this.timeLeft = 10;
         this.playerName = 'Bé yêu';
-        this.maxQuestions = 5;
+        this.selectedAge = 'low'; // 'low' or 'high'
+        this.maxQuestions = 10;
         this.soundManager = new SoundManager();
         this.speechManager = new SpeechManager();
 
@@ -142,6 +143,17 @@ class QuizGame {
             });
         });
 
+        // Age selection
+        document.querySelectorAll('.age-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.soundManager.playClick();
+                document.querySelectorAll('.age-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                this.selectedAge = btn.dataset.age;
+                localStorage.setItem('kidquiz_age', this.selectedAge);
+            });
+        });
+
         this.btnRestart.addEventListener('click', () => {
             this.soundManager.playClick();
             this.showScreen('home');
@@ -156,9 +168,17 @@ class QuizGame {
             }
         });
 
-        // Load player name if exists
+        // Load preferences if exist
         const savedName = localStorage.getItem('kidquiz_last_name');
         if (savedName) this.playerInput.value = savedName;
+
+        const savedAge = localStorage.getItem('kidquiz_age');
+        if (savedAge) {
+            this.selectedAge = savedAge;
+            document.querySelectorAll('.age-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.age === savedAge);
+            });
+        }
     }
 
     showScreen(name) {
@@ -171,12 +191,12 @@ class QuizGame {
         localStorage.setItem('kidquiz_last_name', this.playerName);
         this.currentCategory = category;
 
-        // 20 questions for reading, 10 for others
+        // Set max questions
         this.maxQuestions = (category === 'reading') ? 20 : 10;
 
-        // Prepare questions
-        const questions = [...questionBank[category]];
-        this.currentQuestions = questions.sort(() => Math.random() - 0.5).slice(0, this.maxQuestions);
+        // Prepare questions based on AGE and CATEGORY
+        const ageQuestions = questionBank[this.selectedAge][category];
+        this.currentQuestions = [...ageQuestions].sort(() => Math.random() - 0.5).slice(0, this.maxQuestions);
 
         this.score = 0;
         this.currentIndex = 0;
@@ -192,7 +212,6 @@ class QuizGame {
 
         const q = this.currentQuestions[this.currentIndex];
         this.qText.textContent = q.question;
-        // Icon rendering in question is removed as requested
         if (this.qIcon) this.qIcon.style.display = 'none';
 
         this.scoreDisplay.textContent = `Điểm: ${this.score}`;
@@ -253,12 +272,11 @@ class QuizGame {
     }
 
     handleAnswer(selected, element = null) {
-        this.speechManager.synth.cancel(); // Stop talking when answer is picked
+        this.speechManager.synth.cancel();
         clearInterval(this.timer);
         const q = this.currentQuestions[this.currentIndex];
         const isCorrect = selected === q.answer;
 
-        // Disable all buttons
         const buttons = this.optionsBox.querySelectorAll('button');
         buttons.forEach(b => b.style.pointerEvents = 'none');
 
@@ -276,7 +294,6 @@ class QuizGame {
             this.showFeedback('❌');
             this.soundManager.playWrong();
 
-            // Highlight correct one
             buttons.forEach(b => {
                 const optText = b.querySelector('.option-text').textContent;
                 if (optText === q.answer) b.classList.add('correct-option');
@@ -311,9 +328,14 @@ class QuizGame {
     }
 
     saveScore() {
-        if (this.score === 0) return; // Don't save zero scores
+        if (this.score === 0) return;
         let scores = JSON.parse(localStorage.getItem('kidquiz_leaderboard') || '[]');
-        scores.push({ name: this.playerName, score: this.score, date: new Date().toLocaleDateString() });
+        scores.push({
+            name: this.playerName,
+            score: this.score,
+            age: this.selectedAge === 'low' ? '3-5' : '6-10',
+            date: new Date().toLocaleDateString()
+        });
         scores.sort((a, b) => b.score - a.score);
         scores = scores.slice(0, 5);
         localStorage.setItem('kidquiz_leaderboard', JSON.stringify(scores));
@@ -323,14 +345,13 @@ class QuizGame {
         const scores = JSON.parse(localStorage.getItem('kidquiz_leaderboard') || '[]');
         this.leaderboardList.innerHTML = scores.map((s, i) => `
             <div class="leaderboard-item">
-                <span>${i + 1}. ${s.name}</span>
+                <span>${i + 1}. ${s.name} (${s.age})</span>
                 <span style="font-weight: 700">${s.score}đ</span>
             </div>
         `).join('') || '<p>Chưa có kỷ lục nào</p>';
     }
 }
 
-// Initialize when DOM ready
 window.addEventListener('DOMContentLoaded', () => {
     new QuizGame();
 });

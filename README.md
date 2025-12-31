@@ -24,7 +24,22 @@ Nhấn chuột phải vào `index.html` và chọn **Open with Live Server**.
 - `assets/`: Chứa hình ảnh và tài nguyên.
 
 ## ✨ Tính năng
-- Trắc nghiệm theo chủ đề (Động vật, Thiên nhiên, Cây cối, Địa danh).
+- Trắc nghiệm theo chủ đề (Động vật, Thiên nhiên, Cây cối, Địa danh, Học chữ).
 - Đếm ngược thời gian (10 giây mỗi câu).
-- Bảng xếp hạng lưu cục bộ trên máy.
-- Hiệu ứng âm thanh và phản hồi sinh động (Emojis).
+- Bán xếp hạng lưu cục bộ trên máy.
+- Hiệu ứng âm thanh và giọng đọc sinh động.
+
+## 🌐 Triển khai Online (GitHub Pages)
+
+Để đưa trò chơi lên mạng cho mọi người cùng chơi:
+
+1. Tạo một repository mới trên GitHub (ví dụ đặt tên là `kid-quiz`).
+2. Chạy lệnh sau trong Terminal để đẩy code lên (thay `USERNAME` bằng tên GitHub của bạn):
+   ```bash
+   git remote add origin https://github.com/USERNAME/kid-quiz.git
+   git branch -M main
+   git push -u origin main
+   ```
+3. Sau khi push xong, vào mục **Settings > Pages** trên GitHub của bạn.
+4. Ở phần **Build and deployment**, chọn Branch là `main` và nhấn **Save**.
+5. Sau vài phút, bạn sẽ có một đường link kiểu `https://USERNAME.github.io/kid-quiz/` để chơi online!
