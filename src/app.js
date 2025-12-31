@@ -8,6 +8,30 @@ class SoundManager {
     init() {
         if (!this.ctx) {
             this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+            // Interaction to unlock context (Required for mobile Safari/Chrome)
+            const unlock = () => {
+                if (this.ctx.state === 'suspended') {
+                    this.ctx.resume();
+                }
+                // Play silent sound to clear the "locked" state
+                const osc = this.ctx.createOscillator();
+                osc.frequency.setValueAtTime(440, this.ctx.currentTime);
+                const gain = this.ctx.createGain();
+                gain.gain.setValueAtTime(0, this.ctx.currentTime);
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start(0);
+                osc.stop(0.1);
+
+                window.removeEventListener('mousedown', unlock);
+                window.removeEventListener('touchstart', unlock);
+                window.removeEventListener('keydown', unlock);
+            };
+
+            window.addEventListener('mousedown', unlock);
+            window.addEventListener('touchstart', unlock);
+            window.addEventListener('keydown', unlock);
         }
     }
 
@@ -129,6 +153,9 @@ class QuizGame {
         this.leaderboardList = document.getElementById('leaderboard-list');
         this.feedback = document.getElementById('feedback');
         this.btnRestart = document.getElementById('btn-restart');
+
+        // Immediate init for sound context
+        this.soundManager.init();
 
         this.init();
     }
