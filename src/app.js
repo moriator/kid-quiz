@@ -63,6 +63,21 @@ class SoundManager {
 class SpeechManager {
     constructor() {
         this.synth = window.speechSynthesis;
+        this.voice = null;
+
+        // Try to load voices immediately
+        this.loadVoices();
+
+        // Also listen for changes (some browsers load voices asynchronously)
+        if (this.synth.onvoiceschanged !== undefined) {
+            this.synth.onvoiceschanged = () => this.loadVoices();
+        }
+    }
+
+    loadVoices() {
+        const voices = this.synth.getVoices();
+        // Look for any Vietnamese voice
+        this.voice = voices.find(v => v.lang.startsWith('vi')) || null;
     }
 
     speak(text) {
@@ -70,9 +85,15 @@ class SpeechManager {
         this.synth.cancel();
 
         const utterance = new SpeechSynthesisUtterance(text);
+
+        // Explicitly set Vietnamese lang and voice if found
         utterance.lang = 'vi-VN';
-        utterance.rate = 1.2; // Faster rate as requested
-        utterance.pitch = 1.1; // Slightly higher/friendlier pitch
+        if (this.voice) {
+            utterance.voice = this.voice;
+        }
+
+        utterance.rate = 1.2;
+        utterance.pitch = 1.1;
 
         this.synth.speak(utterance);
     }
